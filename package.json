@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:prod": "NODE_ENV=production nodemon server.js",
+    "debug": "nodemon --inspect server.js",
+    "_comment": "To enable debug mode toggle auto attach in vscode to only with flag"
   },
   "keywords": [],
   "author": "",
@@ -19,9 +21,7 @@
     "validator": "^13.9.0"
   },
   "devDependencies": {
-    "eslint": "^8.43.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "prettier": "^2.8.8"
+    "nodemon": "^2.0.22",
+    "prettier": "^3.0.0"
   }
 }
