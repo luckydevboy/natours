@@ -11,6 +11,11 @@ const filterObj = (body, ...properties) => {
   return data;
 };
 
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 exports.updateMe = catchAsync(async (req, res, next) => {
   // Create error if user posts password data
   if (req.body.password || req.body.passwordConfirm)
