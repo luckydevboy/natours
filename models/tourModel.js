@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-// const slugify = require("slugify");
+const slugify = require("slugify");
 // const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
@@ -112,8 +112,9 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
-// tourSchema.index({ price: 1 });
+tourSchema.index({ slug: 1 });
 tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ startLocation: "2dsphere" });
 
 // Virtual populate
 tourSchema.virtual("reviews", {
@@ -127,10 +128,10 @@ tourSchema.virtual("reviews", {
 // });
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
-// tourSchema.pre("save", (next) => {
-//   this.slug = slugify(String(this.name), { lower: true });
-//   next();
-// });
+tourSchema.pre("save", (next) => {
+  this.slug = slugify(String(this.name), { lower: true });
+  next();
+});
 
 // tourSchema.pre('save', function(next) {
 //   console.log('Will save document...');
