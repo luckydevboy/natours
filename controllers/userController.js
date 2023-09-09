@@ -6,7 +6,7 @@ const factory = require("./handleFactory");
 const filterObj = (body, ...properties) => {
   const data = { ...body };
   Object.keys(data).map(
-    (item) => !properties.includes(item) && delete data[item],
+    (item) => !properties.includes(item) && delete data[item]
   );
   return data;
 };
@@ -22,8 +22,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "This route is not for password update. Please use /update-my-password",
-        400,
-      ),
+        400
+      )
     );
 
   // Filter out unwanted fields names that are not allowed to be updated

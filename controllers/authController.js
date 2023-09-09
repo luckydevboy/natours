@@ -14,12 +14,12 @@ const createSendToken = (user, statusCode, res) => {
     process.env.JWT_SECRET_KEY,
     {
       expiresIn: process.env.JWT_EXPIRES_IN,
-    },
+    }
   );
 
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
     secure: false,
@@ -97,7 +97,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   // 2) Token verification
   const decoded = await promisify(jwt.verify)(
     token,
-    process.env.JWT_SECRET_KEY,
+    process.env.JWT_SECRET_KEY
   );
   // 3) Check if user still exists
   const currentUser = await User.findById(decoded.id);
@@ -105,17 +105,18 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "The token belonging to this user does no longer exist!",
-        401,
-      ),
+        401
+      )
     );
   // 4) Check if user changed password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
-      new AppError("User recently changed password! Please login again", 401),
+      new AppError("User recently changed password! Please login again", 401)
     );
   }
 
   req.user = currentUser;
+  res.locals.user = currentUser;
 
   next();
 });
@@ -125,7 +126,7 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.token) {
     const decoded = await promisify(jwt.verify)(
       req.cookies.token,
-      process.env.JWT_SECRET_KEY,
+      process.env.JWT_SECRET_KEY
     );
     // Check if user still exists
     const currentUser = await User.findById(decoded.id);
@@ -146,7 +147,7 @@ exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role))
       return next(
-        new AppError("You don't have permission to perform this action", 403),
+        new AppError("You don't have permission to perform this action", 403)
       );
 
     next();
@@ -165,7 +166,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // Send to user's email
   const resetURL = `${req.protocol}://${req.get(
-    "host",
+    "host"
   )}/api/v1/users/reset-password/${resetToken}`;
 
   const text = `<p style="line-height: 20px;">Forgot your password? Submit a PATCH request with your new <code>password</code> and <code>passwordConfirm</code> to <a href={resetURL}>${resetURL}</a>.</p><p style="line-height: 20px;">If you didn't forget the password, please ignore this email!</p>`;
@@ -189,8 +190,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "There was an error sending the email. Try again later!",
-        500,
-      ),
+        500
+      )
     );
   }
 });
@@ -230,7 +231,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // Check if posted current password is correct
   if (
-    !(await user.passwordIsCorrect(req.body.currentPassword, user.password))
+    !(await user.passwordIsCorrect(req.body.passwordCurrent, user.password))
   ) {
     return next(new AppError("Your current password is wrong!", 401));
   }
